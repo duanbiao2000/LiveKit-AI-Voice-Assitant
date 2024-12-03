@@ -3,7 +3,9 @@ from typing import Annotated
 from livekit.agents import llm
 import logging
 
+# 获取名为"temperature-control"的日志记录器
 logger = logging.getLogger("temperature-control")
+# 设置日志记录器的级别为INFO
 logger.setLevel(logging.INFO)
 
 
@@ -28,10 +30,16 @@ class AssistantFnc(llm.FunctionContext):
         }
 
     @llm.ai_callable(description="get the temperature in a specific room")
+    # `zone` 参数被注解为 `Annotated[Zone, llm.TypeInfo(description=
+    # "The specific zone")]`，这意味着它的类型是 `Zone` 枚举，并且
+    # 附带了描述信息，帮助用户理解该参数的用途。
     def get_temperature(
-        self, zone: Annotated[Zone, llm.TypeInfo(description="The specific zone")]
+        self,
+        zone: Annotated[Zone,
+                        llm.TypeInfo(description="The specific zone")]
     ):
         logger.info("get temp - zone %s", zone)
+        # 获取指定区域的温度
         temp = self._temperature[Zone(zone)]
         return f"The temperature in the {zone} is {temp}C"
 
@@ -39,8 +47,10 @@ class AssistantFnc(llm.FunctionContext):
     def set_temperature(
         self,
         zone: Annotated[Zone, llm.TypeInfo(description="The specific zone")],
-        temp: Annotated[int, llm.TypeInfo(description="The temperature to set")],
+        temp: Annotated[int,
+                        llm.TypeInfo(description="The temperature to set")],
     ):
         logger.info("set temo - zone %s, temp: %s", zone, temp)
+        # 将温度值赋给指定区域的温度属性
         self._temperature[Zone(zone)] = temp
         return f"The temperature in the {zone} is now {temp}C"
